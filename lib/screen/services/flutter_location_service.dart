@@ -1,0 +1,35 @@
+import 'package:location/location.dart';
+import 'package:flutter/material.dart';
+
+class FlutterLocationService {
+  static Future<LocationData?> getLocationData() async {
+    Location location = Location();
+    bool _serviceEnabled;
+    PermissionStatus _permissionGranted;
+    LocationData? _locationData;
+
+    _serviceEnabled = await location.serviceEnabled();
+    if (!_serviceEnabled) {
+      _serviceEnabled = await location.requestService();
+      if (!_serviceEnabled) {
+        return null;
+      }
+    }
+
+    _permissionGranted = await location.hasPermission();
+    if (_permissionGranted == PermissionStatus.denied) {
+      _permissionGranted = await location.requestPermission();
+      if (_permissionGranted != PermissionStatus.granted) {
+        return null;
+      }
+    }
+
+    _locationData = await location.getLocation();
+    return _locationData;
+  }
+
+  static Future<void> enableBackgroundMode() async {
+    Location location = Location();
+    await location.enableBackgroundMode(enable: true);
+  }
+}
