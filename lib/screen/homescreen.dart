@@ -32,8 +32,8 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: isFirstTimeUser ? CellEnter() : AdminPage(),
-      // body: CellEnter(),
+      // body: isFirstTimeUser ? CellEnter() : AdminPage(),
+      body: AdminPage(),
     );
   }
 }

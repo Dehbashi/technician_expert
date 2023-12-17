@@ -63,7 +63,7 @@ class _CellEnterState extends State<CellEnter> {
 
   Future<void> sendPhoneNumber(
       String mainIpAddress, String cellNumber, String platformVersion) async {
-    final url = Uri.parse('https://s1.lianerp.com/api/public/auth/otp/send');
+    final url = Uri.parse('https://s1.neshan.com/api/public/auth/otp/send');
     // final url = Uri.parse('https://s1.lianerp.com/api/public/auth/otp/verify');
 
     final headers = {

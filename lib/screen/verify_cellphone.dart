@@ -34,7 +34,7 @@ class _CellVerificationState extends State<CellVerification> {
 
   Future<void> verifyOtpCode(
       String ip, String cellNumber, String userAgent, String otpCode) async {
-    final url = Uri.parse('https://s1.lianerp.com/api/public/auth/otp/verify');
+    final url = Uri.parse('https://s1.neshan.com/api/public/auth/otp/verify');
 
     final headers = {
       'TokenPublic': 'bpbm',
