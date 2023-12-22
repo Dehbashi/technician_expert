@@ -1,13 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:technician/services/location_service.dart';
 import 'dart:async';
 import './logout_page.dart';
 import 'package:persian/persian.dart';
 import './header.dart';
 import '../constans.dart';
-import './services/order_service.dart';
-import './services/flutter_location_service.dart';
-import 'package:flutter_background_service/flutter_background_service.dart';
+import '../services/order_service.dart';
 
 class AdminPage extends StatefulWidget {
   // const AdminPage({super.key});
@@ -21,7 +20,6 @@ class _AdminPageState extends State<AdminPage> {
   String text = "Stop Service";
   late String _cellNumber = '';
   // late bool _checkVpn;
-  late Timer _timer;
   List<Order> orders = [
     Order(
       id: 1011,
@@ -76,7 +74,6 @@ class _AdminPageState extends State<AdminPage> {
 
   void initState() {
     _getDeviceInformation();
-    _startTimer();
     // fetchOrders();
     super.initState();
   }
@@ -95,16 +92,7 @@ class _AdminPageState extends State<AdminPage> {
 
   @override
   void dispose() {
-    _timer.cancel();
     super.dispose();
-  }
-
-  void _startTimer() {
-    final locationService = FlutterLocationService(); // Create an instance
-    _timer = Timer.periodic(Duration(seconds: 5), (_) async {
-      await FlutterLocationService.getLocationData();
-      await locationService.sendToApi(); // Call sendToLian on the instance
-    });
   }
 
   void _getDeviceInformation() async {
@@ -115,13 +103,11 @@ class _AdminPageState extends State<AdminPage> {
   }
 
   Future<void> _clearSharedPreferences() async {
-    await clearSharedPreferences(
-        context); // Call the method from admin_utils.dart
+    await clearSharedPreferences(context); // Call the method from admin_utils.dart
   }
 
   Future<void> _showConfirmationDialog() async {
-    bool confirmed = await showConfirmationDialog(
-        context); // Call the method from admin_utils.dart
+    bool confirmed = await showConfirmationDialog(context); // Call the method from admin_utils.dart
 
     if (confirmed == true) {
       _clearSharedPreferences();
@@ -176,149 +162,149 @@ class _AdminPageState extends State<AdminPage> {
                   ),
                 ),
               ),
-              Container(
-                margin: EdgeInsets.all(10),
-                width: double.infinity,
-                height: 500,
-                child: ListView.builder(
-                  itemCount: orders.length,
-                  itemBuilder: (context, index) {
-                    final order = orders[index];
-                    return Container(
-                      margin: EdgeInsets.all(5),
-                      decoration: BoxDecoration(
-                        color: Color.fromARGB(255, 181, 243, 222),
-                        borderRadius: BorderRadius.circular(10),
-                        boxShadow: [
-                          BoxShadow(
-                            color: Colors.black
-                                .withOpacity(0.2), // Set the shadow color
-                            spreadRadius: 2, // Set the spread radius
-                            blurRadius: 3, // Set the blur radius
-                            offset: Offset(0, 2), // Set the offset
-                          ),
-                        ],
-                      ),
-                      child: Theme(
-                        data: ThemeData()
-                            .copyWith(dividerColor: Colors.transparent),
-                        child: ExpansionTile(
-                          title: Text(
-                            'سفارش شماره ${order.id.toString().withPersianNumbers()}',
-                            style: TextStyle(
-                              fontFamily: Constants.textFont,
-                              fontWeight: FontWeight.bold,
+              Expanded(
+                child: Container(
+                  margin: EdgeInsets.all(10),
+                  width: double.infinity,
+                  child: ListView.builder(
+                    itemCount: orders.length,
+                    itemBuilder: (context, index) {
+                      final order = orders[index];
+                      return Container(
+                        margin: EdgeInsets.all(5),
+                        decoration: BoxDecoration(
+                          color: Color.fromARGB(255, 181, 243, 222),
+                          borderRadius: BorderRadius.circular(10),
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.black.withOpacity(0.2), // Set the shadow color
+                              spreadRadius: 2, // Set the spread radius
+                              blurRadius: 3, // Set the blur radius
+                              offset: Offset(0, 2), // Set the offset
                             ),
-                          ),
-                          children: [
-                            ListTile(
-                              title: Text(
-                                'نام سفارش: ${order.name}',
-                                style: TextStyle(
-                                  fontFamily: Constants.textFont,
-                                  fontWeight: FontWeight.bold,
+                          ],
+                        ),
+                        child: Theme(
+                          data: ThemeData().copyWith(dividerColor: Colors.transparent),
+                          child: ExpansionTile(
+                            title: Text(
+                              'سفارش شماره ${order.id.toString().withPersianNumbers()}',
+                              style: TextStyle(
+                                fontFamily: Constants.textFont,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                            children: [
+                              ListTile(
+                                title: Text(
+                                  'نام سفارش: ${order.name}',
+                                  style: TextStyle(
+                                    fontFamily: Constants.textFont,
+                                    fontWeight: FontWeight.bold,
+                                  ),
                                 ),
                               ),
-                            ),
-                            Container(
-                              decoration: BoxDecoration(
-                                // color: Colors.grey[200],
-                                borderRadius: BorderRadius.only(
-                                    topRight: Radius.circular(10),
-                                    topLeft: Radius.circular(10)),
-                              ),
-                              child: Column(
-                                children: [
-                                  Container(
-                                    margin: EdgeInsets.all(10),
-                                    width: Constants.buttonWidth,
-                                    height: Constants.buttonHeight,
-                                    child: ElevatedButton(
-                                      onPressed: () {
-                                        showDialog(
-                                            context: context,
-                                            builder: (BuildContext context) {
-                                              return Directionality(
-                                                textDirection:
-                                                    TextDirection.rtl,
-                                                child: AlertDialog(
-                                                  title: Text(
-                                                    'جزئیات سفارش ${order.id.toString().withPersianNumbers()}',
-                                                    style: TextStyle(
-                                                      fontFamily:
-                                                          Constants.textFont,
-                                                    ),
-                                                  ),
-                                                  content: ListTile(
+                              Container(
+                                decoration: BoxDecoration(
+                                  // color: Colors.grey[200],
+                                  borderRadius: BorderRadius.only(
+                                      topRight: Radius.circular(10), topLeft: Radius.circular(10)),
+                                ),
+                                child: Column(
+                                  children: [
+                                    Container(
+                                      margin: EdgeInsets.all(10),
+                                      width: Constants.buttonWidth,
+                                      height: Constants.buttonHeight,
+                                      child: ElevatedButton(
+                                        onPressed: () {
+                                          showDialog(
+                                              context: context,
+                                              builder: (BuildContext context) {
+                                                return Directionality(
+                                                  textDirection: TextDirection.rtl,
+                                                  child: AlertDialog(
                                                     title: Text(
-                                                      '${order.details}',
+                                                      'جزئیات سفارش ${order.id.toString().withPersianNumbers()}',
                                                       style: TextStyle(
-                                                        fontFamily:
-                                                            Constants.textFont,
-                                                        height: 2.5,
+                                                        fontFamily: Constants.textFont,
                                                       ),
                                                     ),
-                                                  ),
-                                                  actions: [
-                                                    TextButton(
-                                                      onPressed: () {
-                                                        Navigator.of(context)
-                                                            .pop();
-                                                      },
-                                                      child: Center(
-                                                        child: Text(
-                                                          'خروج',
-                                                          style: TextStyle(
-                                                            fontFamily:
-                                                                Constants
-                                                                    .textFont,
-                                                          ),
+                                                    content: ListTile(
+                                                      title: Text(
+                                                        '${order.details}',
+                                                        style: TextStyle(
+                                                          fontFamily: Constants.textFont,
+                                                          height: 2.5,
                                                         ),
                                                       ),
                                                     ),
-                                                  ],
-                                                ),
-                                              );
-                                            });
-                                      },
-                                      child: Text('جزئیات سفارش'),
-                                      style: Constants.getElevatedButtonStyle(
-                                          ButtonType.details),
+                                                    actions: [
+                                                      TextButton(
+                                                        onPressed: () {
+                                                          Navigator.of(context).pop();
+                                                        },
+                                                        child: Center(
+                                                          child: Text(
+                                                            'خروج',
+                                                            style: TextStyle(
+                                                              fontFamily: Constants.textFont,
+                                                            ),
+                                                          ),
+                                                        ),
+                                                      ),
+                                                    ],
+                                                  ),
+                                                );
+                                              });
+                                        },
+                                        child: Text('جزئیات سفارش'),
+                                        style: Constants.getElevatedButtonStyle(ButtonType.details),
+                                      ),
                                     ),
-                                  ),
-                                  Container(
-                                    margin: EdgeInsets.all(10),
-                                    width: Constants.buttonWidth,
-                                    height: Constants.buttonHeight,
-                                    child: ElevatedButton(
-                                      onPressed: () {},
-                                      child: Text('قبول سفارش'),
-                                      style: Constants.getElevatedButtonStyle(
-                                          ButtonType.accept),
+                                    Container(
+                                      margin: EdgeInsets.all(10),
+                                      width: Constants.buttonWidth,
+                                      height: Constants.buttonHeight,
+                                      child: ElevatedButton(
+                                        onPressed: () {},
+                                        child: Text('قبول سفارش'),
+                                        style: Constants.getElevatedButtonStyle(ButtonType.accept),
+                                      ),
                                     ),
-                                  ),
-                                  Container(
-                                    margin: EdgeInsets.all(10),
-                                    width: Constants.buttonWidth,
-                                    height: Constants.buttonHeight,
-                                    child: ElevatedButton(
-                                      onPressed: () {},
-                                      child: Text('رد سفارش'),
-                                      style: Constants.getElevatedButtonStyle(
-                                          ButtonType.cancel),
+                                    Container(
+                                      margin: EdgeInsets.all(10),
+                                      width: Constants.buttonWidth,
+                                      height: Constants.buttonHeight,
+                                      child: ElevatedButton(
+                                        onPressed: () {},
+                                        child: Text('رد سفارش'),
+                                        style: Constants.getElevatedButtonStyle(ButtonType.cancel),
+                                      ),
                                     ),
-                                  ),
-                                ],
+                                  ],
+                                ),
                               ),
-                            ),
-
-                            // Add more details as needed
-                          ],
+                              // Add more details as needed
+                            ],
+                          ),
                         ),
-                      ),
-                    );
-                  },
+                      );
+                    },
+                  ),
                 ),
+              ),
+              ElevatedButton(
+                onPressed: () async {
+                  final isPermissionsGranted = await LocationService.isPermissionsGranted;
+                  if (!isPermissionsGranted) return;
+                  if (await LocationService.isServiceRunning) {
+                    await LocationService.stop();
+                  } else {
+                    await LocationService.start();
+                  }
+                },
+                child: Text('Start location'),
               ),
             ],
           ),

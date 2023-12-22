@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 
 enum ButtonType { accept, cancel, details }
 
@@ -41,3 +42,16 @@ class Constants {
     );
   }
 }
+
+const kLocationServiceChannel = AndroidNotificationChannel(
+  'appname_foreground_location_android_channel',
+  'AppName foreground location service channel',
+  description: 'This channel is used for AppName foreground location service.',
+  importance: Importance.low,
+);
+
+const kLocationServiceNotificationId = 1;
+
+const kFlutterLocalNotificationSettings = InitializationSettings(
+  android: AndroidInitializationSettings('notification_icon'),
+);
