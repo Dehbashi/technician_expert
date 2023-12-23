@@ -17,7 +17,7 @@ class AdminPage extends StatefulWidget {
 
 class _AdminPageState extends State<AdminPage> {
   @override
-  String text = "Stop Service";
+  String text = "Start Service";
   late String _cellNumber = '';
   // late bool _checkVpn;
   List<Order> orders = [
@@ -103,11 +103,13 @@ class _AdminPageState extends State<AdminPage> {
   }
 
   Future<void> _clearSharedPreferences() async {
-    await clearSharedPreferences(context); // Call the method from admin_utils.dart
+    await clearSharedPreferences(
+        context); // Call the method from admin_utils.dart
   }
 
   Future<void> _showConfirmationDialog() async {
-    bool confirmed = await showConfirmationDialog(context); // Call the method from admin_utils.dart
+    bool confirmed = await showConfirmationDialog(
+        context); // Call the method from admin_utils.dart
 
     if (confirmed == true) {
       _clearSharedPreferences();
@@ -177,7 +179,8 @@ class _AdminPageState extends State<AdminPage> {
                           borderRadius: BorderRadius.circular(10),
                           boxShadow: [
                             BoxShadow(
-                              color: Colors.black.withOpacity(0.2), // Set the shadow color
+                              color: Colors.black
+                                  .withOpacity(0.2), // Set the shadow color
                               spreadRadius: 2, // Set the spread radius
                               blurRadius: 3, // Set the blur radius
                               offset: Offset(0, 2), // Set the offset
@@ -185,7 +188,8 @@ class _AdminPageState extends State<AdminPage> {
                           ],
                         ),
                         child: Theme(
-                          data: ThemeData().copyWith(dividerColor: Colors.transparent),
+                          data: ThemeData()
+                              .copyWith(dividerColor: Colors.transparent),
                           child: ExpansionTile(
                             title: Text(
                               'سفارش شماره ${order.id.toString().withPersianNumbers()}',
@@ -208,7 +212,8 @@ class _AdminPageState extends State<AdminPage> {
                                 decoration: BoxDecoration(
                                   // color: Colors.grey[200],
                                   borderRadius: BorderRadius.only(
-                                      topRight: Radius.circular(10), topLeft: Radius.circular(10)),
+                                      topRight: Radius.circular(10),
+                                      topLeft: Radius.circular(10)),
                                 ),
                                 child: Column(
                                   children: [
@@ -222,19 +227,22 @@ class _AdminPageState extends State<AdminPage> {
                                               context: context,
                                               builder: (BuildContext context) {
                                                 return Directionality(
-                                                  textDirection: TextDirection.rtl,
+                                                  textDirection:
+                                                      TextDirection.rtl,
                                                   child: AlertDialog(
                                                     title: Text(
                                                       'جزئیات سفارش ${order.id.toString().withPersianNumbers()}',
                                                       style: TextStyle(
-                                                        fontFamily: Constants.textFont,
+                                                        fontFamily:
+                                                            Constants.textFont,
                                                       ),
                                                     ),
                                                     content: ListTile(
                                                       title: Text(
                                                         '${order.details}',
                                                         style: TextStyle(
-                                                          fontFamily: Constants.textFont,
+                                                          fontFamily: Constants
+                                                              .textFont,
                                                           height: 2.5,
                                                         ),
                                                       ),
@@ -242,13 +250,16 @@ class _AdminPageState extends State<AdminPage> {
                                                     actions: [
                                                       TextButton(
                                                         onPressed: () {
-                                                          Navigator.of(context).pop();
+                                                          Navigator.of(context)
+                                                              .pop();
                                                         },
                                                         child: Center(
                                                           child: Text(
                                                             'خروج',
                                                             style: TextStyle(
-                                                              fontFamily: Constants.textFont,
+                                                              fontFamily:
+                                                                  Constants
+                                                                      .textFont,
                                                             ),
                                                           ),
                                                         ),
@@ -259,7 +270,8 @@ class _AdminPageState extends State<AdminPage> {
                                               });
                                         },
                                         child: Text('جزئیات سفارش'),
-                                        style: Constants.getElevatedButtonStyle(ButtonType.details),
+                                        style: Constants.getElevatedButtonStyle(
+                                            ButtonType.details),
                                       ),
                                     ),
                                     Container(
@@ -269,7 +281,8 @@ class _AdminPageState extends State<AdminPage> {
                                       child: ElevatedButton(
                                         onPressed: () {},
                                         child: Text('قبول سفارش'),
-                                        style: Constants.getElevatedButtonStyle(ButtonType.accept),
+                                        style: Constants.getElevatedButtonStyle(
+                                            ButtonType.accept),
                                       ),
                                     ),
                                     Container(
@@ -279,7 +292,8 @@ class _AdminPageState extends State<AdminPage> {
                                       child: ElevatedButton(
                                         onPressed: () {},
                                         child: Text('رد سفارش'),
-                                        style: Constants.getElevatedButtonStyle(ButtonType.cancel),
+                                        style: Constants.getElevatedButtonStyle(
+                                            ButtonType.cancel),
                                       ),
                                     ),
                                   ],
@@ -296,15 +310,23 @@ class _AdminPageState extends State<AdminPage> {
               ),
               ElevatedButton(
                 onPressed: () async {
-                  final isPermissionsGranted = await LocationService.isPermissionsGranted;
+                  final isPermissionsGranted =
+                      await LocationService.isPermissionsGranted;
                   if (!isPermissionsGranted) return;
                   if (await LocationService.isServiceRunning) {
                     await LocationService.stop();
+                    setState(() {
+                      text = 'Start Service';
+                    });
                   } else {
                     await LocationService.start();
+                    setState(() {
+                      text = 'Stop Service';
+                    });
                   }
                 },
-                child: Text('Start location'),
+                // child: Text('Start location'),
+                child: Text(text),
               ),
             ],
           ),

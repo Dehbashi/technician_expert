@@ -29,14 +29,17 @@ final _foregroundServiceIosConfig = IosConfiguration(
 const _stopKey = 'stop';
 
 class LocationService {
-  static final _flutterLocalNotificationsPlugin = FlutterLocalNotificationsPlugin();
+  static final _flutterLocalNotificationsPlugin =
+      FlutterLocalNotificationsPlugin();
   static final _foregroundService = FlutterBackgroundService();
 
   static Future<void> initialize() async {
-    await _flutterLocalNotificationsPlugin.initialize(kFlutterLocalNotificationSettings);
+    await _flutterLocalNotificationsPlugin
+        .initialize(kFlutterLocalNotificationSettings);
 
     await _flutterLocalNotificationsPlugin
-        .resolvePlatformSpecificImplementation<AndroidFlutterLocalNotificationsPlugin>()
+        .resolvePlatformSpecificImplementation<
+            AndroidFlutterLocalNotificationsPlugin>()
         ?.createNotificationChannel(kLocationServiceChannel);
 
     await _foregroundService.configure(
@@ -99,7 +102,8 @@ void _onStart(ServiceInstance service) async {
       final position = await Geolocator.getCurrentPosition();
 
       _sendToApi(position);
-      final text = '${position.latitude.toString()}, ${position.longitude.toString()}';
+      final text =
+          '${position.latitude.toString()}, ${position.longitude.toString()}';
       print(text);
 
       flutterLocalNotificationsPlugin.show(
@@ -125,12 +129,8 @@ void _onStart(ServiceInstance service) async {
 
 Future<void> _sendToApi(Position position) async {
   try {
-    final url = Uri.parse('https://s1.neshan.com/api/public/user/provider-log-location');
-
-    final headers = {
-      'TokenPublic': 'bpbm',
-      'Content-Type': 'application/json',
-    };
+    final url = Uri.parse(
+        'https://s1.lianerp.com/api/public/user/provider-log-location');
 
     SharedPreferences prefs = await SharedPreferences.getInstance();
     final _token = prefs.getString('token');
@@ -138,12 +138,18 @@ Future<void> _sendToApi(Position position) async {
     final _cellNumber = prefs.getString('cellNumber');
     final _userAgent = prefs.getString('userAgent');
 
+    final headers = {
+      'TokenPublic': 'bpbm',
+      'Authorization': 'Bearer $_token',
+      'Content-Type': 'application/json',
+    };
+
     final body = jsonEncode({
       'ip': _ip,
       'phone_number': _cellNumber,
       'userAgent': _userAgent,
       'lat': position.latitude,
-      'long': position.longitude,
+      'lng': position.longitude,
       'token': _token,
     });
 
