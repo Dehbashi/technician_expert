@@ -20,7 +20,7 @@ class AdminPage extends StatefulWidget {
 
 class _AdminPageState extends State<AdminPage> {
   @override
-  String text = "Start Service";
+  String text = "شروع سرویس دهی";
   late String _cellNumber = '';
   late String _firstName = '';
   late String _lastName = '';
@@ -324,6 +324,18 @@ class _AdminPageState extends State<AdminPage> {
                                                             height: Constants
                                                                 .textHeight,
                                                           ),
+                                                          Text(
+                                                            'شماره تلفن:',
+                                                            style: TextStyle(
+                                                              fontFamily:
+                                                                  Constants
+                                                                      .textFont,
+                                                            ),
+                                                          ),
+                                                          SizedBox(
+                                                            height: Constants
+                                                                .textHeight,
+                                                          ),
                                                           GestureDetector(
                                                             onTap: () {
                                                               String
@@ -337,41 +349,28 @@ class _AdminPageState extends State<AdminPage> {
                                                               launchUrl(
                                                                   phoneUri);
                                                             },
-                                                            child: Text.rich(
-                                                              TextSpan(
-                                                                children: [
-                                                                  TextSpan(
-                                                                    text:
-                                                                        'شماره تلفن: ',
-                                                                    style:
-                                                                        TextStyle(
-                                                                      fontFamily:
-                                                                          Constants
-                                                                              .textFont,
-                                                                    ),
-                                                                  ),
-                                                                  TextSpan(
-                                                                    text: orderDetail
-                                                                        .user[
-                                                                            "phone_number"]
-                                                                        .toString()
-                                                                        .withPersianNumbers(),
-                                                                    style:
-                                                                        TextStyle(
-                                                                      decoration:
-                                                                          TextDecoration
-                                                                              .underline,
-                                                                      decorationColor:
-                                                                          Colors
-                                                                              .blue,
-                                                                      fontFamily:
-                                                                          Constants
-                                                                              .textFont,
-                                                                      color: Colors
-                                                                          .blue, // Set the desired color for the phone number
-                                                                    ),
-                                                                  ),
-                                                                ],
+                                                            child: Center(
+                                                              child: Text(
+                                                                orderDetail
+                                                                    .user[
+                                                                        "phone_number"]
+                                                                    .toString()
+                                                                    .withPersianNumbers(),
+                                                                style:
+                                                                    TextStyle(
+                                                                  decoration:
+                                                                      TextDecoration
+                                                                          .underline,
+                                                                  decorationColor:
+                                                                      Colors
+                                                                          .blue,
+                                                                  fontFamily:
+                                                                      Constants
+                                                                          .textFont,
+                                                                  color: Colors
+                                                                      .blue,
+                                                                  fontSize: 20,
+                                                                ),
                                                               ),
                                                             ),
                                                           ),
@@ -448,7 +447,12 @@ class _AdminPageState extends State<AdminPage> {
                 onPressed: () {
                   fetchOrders();
                 },
-                child: Text('refresh'),
+                child: Text(
+                  'بروزرسانی سرویس ها',
+                  style: TextStyle(
+                    fontFamily: Constants.textFont,
+                  ),
+                ),
               ),
               SizedBox(
                 height: 20,
@@ -461,17 +465,22 @@ class _AdminPageState extends State<AdminPage> {
                   if (await LocationService.isServiceRunning) {
                     await LocationService.stop();
                     setState(() {
-                      text = 'Start Service';
+                      text = 'شروع سرویس دهی';
                     });
                   } else {
                     await LocationService.start();
                     setState(() {
-                      text = 'Stop Service';
+                      text = 'پایان سرویس دهی';
                     });
                   }
                 },
                 // child: Text('Start location'),
-                child: Text(text),
+                child: Text(
+                  text,
+                  style: TextStyle(
+                    fontFamily: Constants.textFont,
+                  ),
+                ),
               ),
             ],
           ),
