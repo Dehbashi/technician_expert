@@ -20,7 +20,7 @@ class AdminPage extends StatefulWidget {
 
 class _AdminPageState extends State<AdminPage> {
   @override
-  String text = "شروع سرویس دهی";
+  String text = "سرویس دهی";
   late String _cellNumber = '';
   late String _firstName = '';
   late String _lastName = '';
@@ -28,16 +28,31 @@ class _AdminPageState extends State<AdminPage> {
   bool expanded = false;
   // List<OrderDetails> orderDetails = [];
   List<OrderDetails?> orderDetails = [];
+  bool locStart = true;
 
   void initState() {
     _getDeviceInformation();
     fetchOrders();
+    LocationStart();
     super.initState();
   }
 
+  Future<void> LocationStart() async {
+    final isPermissionsGranted = await LocationService.isPermissionsGranted;
+    if (!isPermissionsGranted) return;
+    if (locStart = false) {
+      await LocationService.stop();
+    } else {
+      await LocationService.start();
+    }
+  }
+
   Future<void> openGoogleMaps(String lat, String lng) async {
-    final url = 'https://www.google.com/maps/@$lat,$lng,16z?entry=ttu';
-    // final url = 'https://neshan.org/maps/@35.7486,51.335492,17z,0p';
+    // final url = 'https://www.google.com/maps/@$lat,$lng,16z?entry=ttu';
+
+    final url =
+        'https://www.google.com/maps/dir//$lat,$lng/@$lat,$lng,15z?entry=ttu';
+    print(url);
     final uri = Uri.parse(url);
     await launchUrl(uri);
   }
@@ -277,6 +292,18 @@ class _AdminPageState extends State<AdminPage> {
                                                                 .textHeight,
                                                           ),
                                                           Text(
+                                                            'یادداشت های مشتری: ${orderDetail.notes}',
+                                                            style: TextStyle(
+                                                              fontFamily:
+                                                                  Constants
+                                                                      .textFont,
+                                                            ),
+                                                          ),
+                                                          SizedBox(
+                                                            height: Constants
+                                                                .textHeight,
+                                                          ),
+                                                          Text(
                                                             'تاریخ مراجعه: ${orderDetail.date}',
                                                             style: TextStyle(
                                                               fontFamily:
@@ -423,11 +450,11 @@ class _AdminPageState extends State<AdminPage> {
                                             ButtonType.details),
                                       ),
                                     ),
-                                    OrderStateButtons(
-                                        orderStatus: orderDetail!.orderStatus,
-                                        id: orderDetail.id),
                                     // OrderStateButtons(
-                                    //     orderStatus: 3, id: orderDetail!.id),
+                                    // orderStatus: orderDetail!.orderStatus,
+                                    // id: orderDetail.id),
+                                    OrderStateButtons(
+                                        orderStatus: 3, id: orderDetail!.id),
                                   ],
                                 ),
                               ),
@@ -457,31 +484,31 @@ class _AdminPageState extends State<AdminPage> {
               SizedBox(
                 height: 20,
               ),
-              ElevatedButton(
-                onPressed: () async {
-                  final isPermissionsGranted =
-                      await LocationService.isPermissionsGranted;
-                  if (!isPermissionsGranted) return;
-                  if (await LocationService.isServiceRunning) {
-                    await LocationService.stop();
-                    setState(() {
-                      text = 'شروع سرویس دهی';
-                    });
-                  } else {
-                    await LocationService.start();
-                    setState(() {
-                      text = 'پایان سرویس دهی';
-                    });
-                  }
-                },
-                // child: Text('Start location'),
-                child: Text(
-                  text,
-                  style: TextStyle(
-                    fontFamily: Constants.textFont,
-                  ),
-                ),
-              ),
+              // ElevatedButton(
+              //   onPressed: () async {
+              //     final isPermissionsGranted =
+              //         await LocationService.isPermissionsGranted;
+              //     if (!isPermissionsGranted) return;
+              //     if (await LocationService.isServiceRunning) {
+              //       await LocationService.stop();
+              //       setState(() {
+              //         text = 'شروع سرویس دهی';
+              //       });
+              //     } else {
+              //       await LocationService.start();
+              //       setState(() {
+              //         text = 'پایان سرویس دهی';
+              //       });
+              //     }
+              //   },
+              //   // child: Text('Start location'),
+              //   child: Text(
+              //     text,
+              //     style: TextStyle(
+              //       fontFamily: Constants.textFont,
+              //     ),
+              //   ),
+              // ),
             ],
           ),
         ),
