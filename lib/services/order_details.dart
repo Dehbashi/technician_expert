@@ -62,6 +62,7 @@ class OrderDetails {
   final List items;
   final dynamic address;
   final dynamic service;
+  final dynamic user;
 
   OrderDetails({
     required this.id,
@@ -77,6 +78,7 @@ class OrderDetails {
     required this.items,
     required this.address,
     required this.service,
+    required this.user,
   });
 
   factory OrderDetails.fromJson(Map<String, dynamic> json) {
@@ -94,6 +96,7 @@ class OrderDetails {
       items: json["items"],
       address: json["address"],
       service: json["service"],
+      user: json["user"],
     );
   }
 }

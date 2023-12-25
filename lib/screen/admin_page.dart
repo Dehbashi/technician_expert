@@ -22,6 +22,8 @@ class _AdminPageState extends State<AdminPage> {
   @override
   String text = "Start Service";
   late String _cellNumber = '';
+  late String _firstName = '';
+  late String _lastName = '';
   List<Order> orders = [];
   bool expanded = false;
   // List<OrderDetails> orderDetails = [];
@@ -76,6 +78,8 @@ class _AdminPageState extends State<AdminPage> {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     setState(() {
       _cellNumber = prefs.getString('cellNumber') ?? '';
+      _firstName = prefs.getString('firstName') ?? '';
+      _lastName = prefs.getString('lastName') ?? '';
     });
   }
 
@@ -123,7 +127,7 @@ class _AdminPageState extends State<AdminPage> {
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Text(
-                        '${_cellNumber.withPersianNumbers()}',
+                        '$_firstName $_lastName ${_cellNumber.withPersianNumbers()}',
                         style: TextStyle(
                           fontSize: 20,
                           fontWeight: FontWeight.bold,
@@ -229,6 +233,9 @@ class _AdminPageState extends State<AdminPage> {
                                                               fontFamily:
                                                                   Constants
                                                                       .textFont,
+                                                              fontWeight:
+                                                                  FontWeight
+                                                                      .bold,
                                                             ),
                                                           ),
                                                           SizedBox(
@@ -253,6 +260,9 @@ class _AdminPageState extends State<AdminPage> {
                                                               fontFamily:
                                                                   Constants
                                                                       .textFont,
+                                                              fontWeight:
+                                                                  FontWeight
+                                                                      .bold,
                                                             ),
                                                           ),
                                                           SizedBox(
@@ -296,11 +306,66 @@ class _AdminPageState extends State<AdminPage> {
                                                                 .textHeight,
                                                           ),
                                                           Text(
-                                                            'شماره تلفن: ${orderDetail.address["phone_number"]}',
+                                                            'نام مشتری: ${orderDetail.user["name"]}',
                                                             style: TextStyle(
                                                               fontFamily:
                                                                   Constants
                                                                       .textFont,
+                                                            ),
+                                                          ),
+                                                          SizedBox(
+                                                            height: Constants
+                                                                .textHeight,
+                                                          ),
+                                                          GestureDetector(
+                                                            onTap: () {
+                                                              String
+                                                                  phoneNumber =
+                                                                  orderDetail
+                                                                          .user[
+                                                                      "phone_number"];
+                                                              Uri phoneUri =
+                                                                  Uri.parse(
+                                                                      'tel:$phoneNumber');
+                                                              launchUrl(
+                                                                  phoneUri);
+                                                            },
+                                                            child: Text.rich(
+                                                              TextSpan(
+                                                                children: [
+                                                                  TextSpan(
+                                                                    text:
+                                                                        'شماره تلفن: ',
+                                                                    style:
+                                                                        TextStyle(
+                                                                      fontFamily:
+                                                                          Constants
+                                                                              .textFont,
+                                                                    ),
+                                                                  ),
+                                                                  TextSpan(
+                                                                    text: orderDetail
+                                                                        .user[
+                                                                            "phone_number"]
+                                                                        .toString()
+                                                                        .withPersianNumbers(),
+                                                                    style:
+                                                                        TextStyle(
+                                                                      decoration:
+                                                                          TextDecoration
+                                                                              .underline,
+                                                                      decorationColor:
+                                                                          Colors
+                                                                              .blue,
+                                                                      fontFamily:
+                                                                          Constants
+                                                                              .textFont,
+                                                                      color: Colors
+                                                                          .blue, // Set the desired color for the phone number
+                                                                    ),
+                                                                  ),
+                                                                ],
+                                                              ),
                                                             ),
                                                           ),
                                                           SizedBox(
@@ -352,7 +417,8 @@ class _AdminPageState extends State<AdminPage> {
                                             ButtonType.details),
                                       ),
                                     ),
-                                    OrderStateButtons(orderStatus: 2),
+                                    OrderStateButtons(
+                                        orderStatus: orderDetail!.orderStatus),
                                   ],
                                 ),
                               ),

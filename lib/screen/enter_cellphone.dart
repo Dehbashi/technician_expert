@@ -226,6 +226,5 @@ class _CellEnterState extends State<CellEnter> {
         ),
       ),
     );
-    ;
   }
 }

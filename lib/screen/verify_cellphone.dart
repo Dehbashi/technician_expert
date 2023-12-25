@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../screen/user_name.dart';
 import './admin_page.dart';
 import './enter_cellphone.dart';
 import './header.dart';
@@ -68,7 +69,7 @@ class _CellVerificationState extends State<CellVerification> {
       Navigator.push(
         context,
         MaterialPageRoute(
-          builder: (context) => AdminPage(),
+          builder: (context) => UserName(),
         ),
       );
     } else {
@@ -103,7 +104,7 @@ class _CellVerificationState extends State<CellVerification> {
                   height: 200,
                   width: double.infinity,
                   decoration: BoxDecoration(
-                    color: Colors.lightBlue,
+                    color: Color(0xFF9BDCE0),
                     borderRadius: BorderRadius.only(
                       bottomLeft: Radius.circular(20),
                       bottomRight: Radius.circular(20),
@@ -112,7 +113,7 @@ class _CellVerificationState extends State<CellVerification> {
                   child: Text(
                     'کد تأیید',
                     style: TextStyle(
-                      color: Colors.white,
+                      color: Color(0xFF037E85),
                       fontSize: 35,
                       fontWeight: FontWeight.w900,
                     ),

@@ -11,7 +11,7 @@ class StateService {
 
   Future<void> getStatus() async {
     final url = Uri.parse(
-        'https://s1.lianerp.com/api/public/provider/order/change-status?$status');
+        'https://s1.lianerp.com/api/public/provider/order/change-status');
 
     SharedPreferences prefs = await SharedPreferences.getInstance();
     final _token = prefs.getString('token');

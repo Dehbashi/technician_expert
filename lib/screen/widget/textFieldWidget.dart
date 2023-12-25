@@ -27,8 +27,9 @@ class TextFieldWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       child: TextFormField(
+        textDirection: TextDirection.rtl,
         keyboardType: keyboardType,
-        inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+        // inputFormatters: [FilteringTextInputFormatter.digitsOnly],
         validator: validator,
         onSaved: onSaved,
         style: TextStyle(
@@ -36,7 +37,7 @@ class TextFieldWidget extends StatelessWidget {
             color: Colors.black,
             fontWeight: FontWeight.bold,
             fontFamily: 'iranSans,'),
-        textAlign: TextAlign.left,
+        textAlign: TextAlign.right,
         obscureText: obscureText,
         decoration: InputDecoration(
           labelText: labelText,
