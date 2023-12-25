@@ -5,6 +5,7 @@ enum ButtonType { accept, cancel, details }
 
 class Constants {
   static const String textFont = 'iranSans';
+  static const double textHeight = 20;
   static const double buttonWidth = 220;
   static const double buttonHeight = 70;
   static ButtonStyle getElevatedButtonStyle(ButtonType type) {

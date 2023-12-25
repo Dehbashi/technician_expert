@@ -1,12 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:technician/services/location_service.dart';
+import 'package:technician/services/order_details.dart';
 import 'dart:async';
 import './logout_page.dart';
 import 'package:persian/persian.dart';
 import './header.dart';
 import '../constans.dart';
 import '../services/order_service.dart';
+import 'package:url_launcher/url_launcher.dart';
+import 'order_state_buttons.dart';
 
 class AdminPage extends StatefulWidget {
   // const AdminPage({super.key});
@@ -19,76 +22,50 @@ class _AdminPageState extends State<AdminPage> {
   @override
   String text = "Start Service";
   late String _cellNumber = '';
-  // late bool _checkVpn;
-  List<Order> orders = [
-    Order(
-      id: 1011,
-      name: 'Order 1',
-      details: 'سرویسکار: مهدی فولادی\n'
-          'تاریخ درخواست سرویس: 22 مهرماه 1402\n'
-          'نحوه آشنایی: گوگل\n'
-          'آدرس: علامه طباطبایی، خیابان آستانه، کوچه پنجم شرقی، پلاک 7، واحد 3',
-    ),
-    Order(
-      id: 1012,
-      name: 'Order 2',
-      details: 'سرویسکار: مهدی فولادی\n'
-          'تاریخ درخواست سرویس: 22 مهرماه 1402\n'
-          'نحوه آشنایی: گوگل\n'
-          'آدرس: علامه طباطبایی، خیابان آستانه، کوچه پنجم شرقی، پلاک 7، واحد 3',
-    ),
-    Order(
-      id: 1013,
-      name: 'Order 3',
-      details: 'سرویسکار: مهدی فولادی\n'
-          'تاریخ درخواست سرویس: 22 مهرماه 1402\n'
-          'نحوه آشنایی: گوگل\n'
-          'آدرس: علامه طباطبایی، خیابان آستانه، کوچه پنجم شرقی، پلاک 7، واحد 3',
-    ),
-    Order(
-      id: 1014,
-      name: 'Order 4',
-      details: 'سرویسکار: مهدی فولادی\n'
-          'تاریخ درخواست سرویس: 22 مهرماه 1402\n'
-          'نحوه آشنایی: گوگل\n'
-          'آدرس: علامه طباطبایی، خیابان آستانه، کوچه پنجم شرقی، پلاک 7، واحد 3',
-    ),
-    Order(
-      id: 1015,
-      name: 'Order 5',
-      details: 'سرویسکار: مهدی فولادی\n'
-          'تاریخ درخواست سرویس: 22 مهرماه 1402\n'
-          'نحوه آشنایی: گوگل\n'
-          'آدرس: علامه طباطبایی، خیابان آستانه، کوچه پنجم شرقی، پلاک 7، واحد 3',
-    ),
-    Order(
-      id: 1016,
-      name: 'Order 6',
-      details: 'سرویسکار: مهدی فولادی\n'
-          'تاریخ درخواست سرویس: 22 مهرماه 1402\n'
-          'نحوه آشنایی: گوگل\n'
-          'آدرس: علامه طباطبایی، خیابان آستانه، کوچه پنجم شرقی، پلاک 7، واحد 3',
-    ),
-  ];
+  List<Order> orders = [];
   bool expanded = false;
+  // List<OrderDetails> orderDetails = [];
+  List<OrderDetails?> orderDetails = [];
 
   void initState() {
     _getDeviceInformation();
-    // fetchOrders();
+    fetchOrders();
     super.initState();
   }
 
-  // void fetchOrders() async {
-  //   try {
-  //     final orderService = OrderService();
-  //     final fetchedOrders = await orderService.getOrders();
-  //     setState(() {
-  //       orders = fetchedOrders;
-  //     });
-  //   } catch (e) {
-  //     print('Failed to fetch orders: $e');
-  //   }
-  // }
+  Future<void> openGoogleMaps(String lat, String lng) async {
+    final url = 'https://www.google.com/maps/@$lat,$lng,16z?entry=ttu';
+    // final url = 'https://neshan.org/maps/@35.7486,51.335492,17z,0p';
+    final uri = Uri.parse(url);
+    await launchUrl(uri);
+  }
+
+  void fetchOrders() async {
+    try {
+      final orderService = OrderService();
+      final fetchedOrders = await orderService.getOrders();
+      setState(() {
+        orders = fetchedOrders;
+      });
+      print('Your orders are $orders');
+
+      List<OrderDetails?> orderDetailsList = []; // List to store order details
+
+      for (Order order in orders) {
+        final orderDetails =
+            await OrderDetailsFetch().getOrderDetails(order.id);
+        print('Order details for order ${order.id}: $orderDetails');
+        orderDetailsList.add(orderDetails); // Add order details to the list
+      }
+
+      setState(() {
+        orderDetails =
+            orderDetailsList; // Update the orderDetails state variable
+      });
+    } catch (e) {
+      print('Failed to fetch orders: $e');
+    }
+  }
 
   @override
   void dispose() {
@@ -172,6 +149,9 @@ class _AdminPageState extends State<AdminPage> {
                     itemCount: orders.length,
                     itemBuilder: (context, index) {
                       final order = orders[index];
+                      final orderDetail = orderDetails.length > index
+                          ? orderDetails[index]
+                          : null;
                       return Container(
                         margin: EdgeInsets.all(5),
                         decoration: BoxDecoration(
@@ -201,7 +181,7 @@ class _AdminPageState extends State<AdminPage> {
                             children: [
                               ListTile(
                                 title: Text(
-                                  'نام سفارش: ${order.name}',
+                                  'نام سفارش: ${order.service}',
                                   style: TextStyle(
                                     fontFamily: Constants.textFont,
                                     fontWeight: FontWeight.bold,
@@ -238,13 +218,111 @@ class _AdminPageState extends State<AdminPage> {
                                                       ),
                                                     ),
                                                     content: ListTile(
-                                                      title: Text(
-                                                        '${order.details}',
-                                                        style: TextStyle(
-                                                          fontFamily: Constants
-                                                              .textFont,
-                                                          height: 2.5,
-                                                        ),
+                                                      title: Column(
+                                                        crossAxisAlignment:
+                                                            CrossAxisAlignment
+                                                                .start,
+                                                        children: [
+                                                          Text(
+                                                            '${orderDetail!.service["title"]}',
+                                                            style: TextStyle(
+                                                              fontFamily:
+                                                                  Constants
+                                                                      .textFont,
+                                                            ),
+                                                          ),
+                                                          SizedBox(
+                                                            height: Constants
+                                                                .textHeight,
+                                                          ),
+                                                          Text(
+                                                            '${orderDetail.items[0]["title"]}',
+                                                            style: TextStyle(
+                                                              fontFamily:
+                                                                  Constants
+                                                                      .textFont,
+                                                            ),
+                                                          ),
+                                                          SizedBox(
+                                                            height: Constants
+                                                                .textHeight,
+                                                          ),
+                                                          Text(
+                                                            '${orderDetail.items[0]["value"]}',
+                                                            style: TextStyle(
+                                                              fontFamily:
+                                                                  Constants
+                                                                      .textFont,
+                                                            ),
+                                                          ),
+                                                          SizedBox(
+                                                            height: Constants
+                                                                .textHeight,
+                                                          ),
+                                                          Text(
+                                                            'تاریخ مراجعه: ${orderDetail.date}',
+                                                            style: TextStyle(
+                                                              fontFamily:
+                                                                  Constants
+                                                                      .textFont,
+                                                            ),
+                                                          ),
+                                                          SizedBox(
+                                                            height: Constants
+                                                                .textHeight,
+                                                          ),
+                                                          Text(
+                                                            'زمان مراجعه: ${orderDetail.time}',
+                                                            style: TextStyle(
+                                                              fontFamily:
+                                                                  Constants
+                                                                      .textFont,
+                                                            ),
+                                                          ),
+                                                          SizedBox(
+                                                            height: Constants
+                                                                .textHeight,
+                                                          ),
+                                                          Text(
+                                                            'آدرس: منطقه ${orderDetail.address["municipality_zone"]} ${orderDetail.address["text"]}',
+                                                            style: TextStyle(
+                                                              fontFamily:
+                                                                  Constants
+                                                                      .textFont,
+                                                            ),
+                                                          ),
+                                                          SizedBox(
+                                                            height: Constants
+                                                                .textHeight,
+                                                          ),
+                                                          Text(
+                                                            'شماره تلفن: ${orderDetail.address["phone_number"]}',
+                                                            style: TextStyle(
+                                                              fontFamily:
+                                                                  Constants
+                                                                      .textFont,
+                                                            ),
+                                                          ),
+                                                          SizedBox(
+                                                            height: Constants
+                                                                .textHeight,
+                                                          ),
+                                                          TextButton(
+                                                            onPressed: () {
+                                                              openGoogleMaps(
+                                                                  orderDetail
+                                                                          .address[
+                                                                      "latitude"],
+                                                                  orderDetail
+                                                                          .address[
+                                                                      "longitude"]);
+                                                              print(
+                                                                  '${orderDetail.address["latitude"]} and ${orderDetail.address["longitude"]}');
+                                                            },
+                                                            child: Text(
+                                                                'مشاهده لوکیشن روی نقشه'),
+                                                          ),
+                                                        ],
                                                       ),
                                                     ),
                                                     actions: [
@@ -274,28 +352,7 @@ class _AdminPageState extends State<AdminPage> {
                                             ButtonType.details),
                                       ),
                                     ),
-                                    Container(
-                                      margin: EdgeInsets.all(10),
-                                      width: Constants.buttonWidth,
-                                      height: Constants.buttonHeight,
-                                      child: ElevatedButton(
-                                        onPressed: () {},
-                                        child: Text('قبول سفارش'),
-                                        style: Constants.getElevatedButtonStyle(
-                                            ButtonType.accept),
-                                      ),
-                                    ),
-                                    Container(
-                                      margin: EdgeInsets.all(10),
-                                      width: Constants.buttonWidth,
-                                      height: Constants.buttonHeight,
-                                      child: ElevatedButton(
-                                        onPressed: () {},
-                                        child: Text('رد سفارش'),
-                                        style: Constants.getElevatedButtonStyle(
-                                            ButtonType.cancel),
-                                      ),
-                                    ),
+                                    OrderStateButtons(orderStatus: 2),
                                   ],
                                 ),
                               ),
@@ -307,6 +364,18 @@ class _AdminPageState extends State<AdminPage> {
                     },
                   ),
                 ),
+              ),
+              SizedBox(
+                height: 20,
+              ),
+              ElevatedButton(
+                onPressed: () {
+                  fetchOrders();
+                },
+                child: Text('refresh'),
+              ),
+              SizedBox(
+                height: 20,
               ),
               ElevatedButton(
                 onPressed: () async {
