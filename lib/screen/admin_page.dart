@@ -126,20 +126,27 @@ class _AdminPageState extends State<AdminPage> {
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Text(
-                        '$_firstName $_lastName ${_cellNumber.withPersianNumbers()}',
-                        style: TextStyle(
-                          fontSize: 20,
-                          fontWeight: FontWeight.bold,
-                          fontFamily: Constants.textFont,
+                      Expanded(
+                        flex: 8,
+                        child: Text(
+                          '$_firstName $_lastName ${_cellNumber.withPersianNumbers()}',
+                          style: TextStyle(
+                            fontSize: 20,
+                            fontWeight: FontWeight.bold,
+                            fontFamily: Constants.textFont,
+                            height: 2.5,
+                          ),
                         ),
                       ),
-                      IconButton(
-                        icon: Icon(Icons.logout_outlined),
-                        onPressed: () {
-                          _showConfirmationDialog();
-                        },
-                        tooltip: 'خروج از سامانه',
+                      Flexible(
+                        flex: 2,
+                        child: IconButton(
+                          icon: Icon(Icons.logout_outlined),
+                          onPressed: () {
+                            _showConfirmationDialog();
+                          },
+                          tooltip: 'خروج از سامانه',
+                        ),
                       ),
                     ],
                   ),
@@ -418,7 +425,10 @@ class _AdminPageState extends State<AdminPage> {
                                       ),
                                     ),
                                     OrderStateButtons(
-                                        orderStatus: orderDetail!.orderStatus),
+                                        orderStatus: orderDetail!.orderStatus,
+                                        id: orderDetail.id),
+                                    // OrderStateButtons(
+                                    //     orderStatus: 3, id: orderDetail!.id),
                                   ],
                                 ),
                               ),

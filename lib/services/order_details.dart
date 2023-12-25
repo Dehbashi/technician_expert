@@ -7,6 +7,8 @@ class OrderDetailsFetch {
   Future<OrderDetails?> getOrderDetails(int id) async {
     final url = Uri.parse(
         'https://s1.lianerp.com/api/public/provider/order/show?id=$id');
+    // final url =
+    //     Uri.parse('https://s1.lianerp.com/api/public/provider/order/show');
 
     SharedPreferences prefs = await SharedPreferences.getInstance();
     final _token = prefs.getString('token');

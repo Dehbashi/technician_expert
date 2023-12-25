@@ -6,8 +6,9 @@ import 'package:shared_preferences/shared_preferences.dart';
 class StateService {
   // const StateService({super.key});
   final int status;
+  final int id;
 
-  StateService({required this.status});
+  StateService({required this.status, required this.id});
 
   Future<void> getStatus() async {
     final url = Uri.parse(
@@ -27,16 +28,19 @@ class StateService {
 
     final body = {
       'status': status,
+      'id': id,
     };
+
+    final encodedBody = jsonEncode(body);
 
     final response = await http.post(
       url,
       headers: headers,
-      body: body,
+      body: encodedBody,
     );
     print(response);
 
-    if (response == 200) {
+    if (response.statusCode == 200) {
       final jsonData = jsonDecode(response.body);
       print('Your json data is $jsonData');
     } else {
