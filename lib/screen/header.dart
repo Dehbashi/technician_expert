@@ -12,7 +12,7 @@ class Header extends StatelessWidget implements PreferredSizeWidget {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             Text(
-              'صفحه مدیریت سرویسکار',
+              'صفحه مدیریت متخصص',
               style: TextStyle(
                 color: Color(0xFF037E85),
                 fontFamily: 'iranSans',
