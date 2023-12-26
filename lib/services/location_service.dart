@@ -129,8 +129,8 @@ void _onStart(ServiceInstance service) async {
 
 Future<void> _sendToApi(Position position) async {
   try {
-    final url = Uri.parse(
-        'https://s1.lianerp.com/api/public/user/provider-log-location');
+    final url =
+        Uri.parse('https://s1.lianerp.com/api/public/provider/log-location');
 
     SharedPreferences prefs = await SharedPreferences.getInstance();
     final _token = prefs.getString('token');
@@ -139,7 +139,7 @@ Future<void> _sendToApi(Position position) async {
     final _userAgent = prefs.getString('userAgent');
 
     final headers = {
-      'TokenPublic': 'bpbm',
+      'Tokenpublic': 'bpbm',
       'Authorization': 'Bearer $_token',
       'Content-Type': 'application/json',
     };

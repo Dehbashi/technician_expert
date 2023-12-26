@@ -9,6 +9,7 @@ import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:flutter/services.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import '../constans.dart';
 
 class CellVerification extends StatefulWidget {
   // const CellVerification({super.key});
@@ -73,12 +74,44 @@ class _CellVerificationState extends State<CellVerification> {
         ),
       );
     } else {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content:
-              Text('Failed to send phone number with ${response.statusCode}'),
-        ),
-      );
+      showDialog(
+          context: context,
+          builder: (BuildContext context) {
+            return AlertDialog(
+              title: Directionality(
+                textDirection: TextDirection.rtl,
+                child: Text(
+                  'کد اشتباه',
+                  style: TextStyle(
+                    fontFamily: Constants.textFont,
+                  ),
+                ),
+              ),
+              content: Directionality(
+                textDirection: TextDirection.rtl,
+                child: Text(
+                  'کد وارد شده اشتباه می باشد. لطفاً مجدداً کد را وارد نمایید.',
+                  style: TextStyle(
+                    fontFamily: Constants.textFont,
+                  ),
+                ),
+              ),
+              actions: [
+                TextButton(
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                  },
+                  child: Text('باشه'),
+                ),
+              ],
+            );
+          });
+      // ScaffoldMessenger.of(context).showSnackBar(
+      //   SnackBar(
+      //     content:
+      //         Text('Failed to send phone number with ${response.statusCode}'),
+      //   ),
+      // );
     }
   }
 
