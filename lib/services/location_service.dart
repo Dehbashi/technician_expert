@@ -18,7 +18,7 @@ final _foregroundServiceAndroidConfig = AndroidConfiguration(
   notificationChannelId: kLocationServiceChannel.id,
   initialNotificationTitle: 'Location Service',
   initialNotificationContent: 'Running',
-  autoStartOnBoot: false,
+  autoStartOnBoot: true,
 );
 
 final _foregroundServiceIosConfig = IosConfiguration(
@@ -97,7 +97,7 @@ void _onStart(ServiceInstance service) async {
   final flutterLocalNotificationsPlugin = FlutterLocalNotificationsPlugin();
 
   final timer = Timer.periodic(
-    const Duration(seconds: 5),
+    const Duration(minutes: 5),
     (_) async {
       final position = await Geolocator.getCurrentPosition();
 

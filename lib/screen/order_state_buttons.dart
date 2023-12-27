@@ -62,6 +62,9 @@ class _OrderStateButtonsState extends State<OrderStateButtons> {
                           message: 'آیا از رد سفارش مطمئن هستید؟',
                           onConfirm: () {
                             StateService(status: 1, id: widget.id).getStatus();
+                            setState(() {
+                              widget.orderStatus = 1;
+                            });
                           },
                         );
                       });
@@ -82,10 +85,20 @@ class _OrderStateButtonsState extends State<OrderStateButtons> {
               height: Constants.buttonHeight,
               child: ElevatedButton(
                 onPressed: () {
-                  StateService(status: 6, id: widget.id).getStatus();
-                  setState(() {
-                    widget.orderStatus = 6;
-                  });
+                  showDialog(
+                      context: context,
+                      builder: (BuildContext context) {
+                        return ConfirmationDialog(
+                          title: 'تایید',
+                          message: 'آیا از حضور مشتری اطمینان دارید؟',
+                          onConfirm: () {
+                            StateService(status: 6, id: widget.id).getStatus();
+                            setState(() {
+                              widget.orderStatus = 6;
+                            });
+                          },
+                        );
+                      });
                 },
                 child: Text('حضور مشتری'),
                 style: Constants.getElevatedButtonStyle(ButtonType.accept),
@@ -97,8 +110,20 @@ class _OrderStateButtonsState extends State<OrderStateButtons> {
               height: Constants.buttonHeight,
               child: ElevatedButton(
                 onPressed: () {
-                  StateService(status: 5, id: widget.id).getStatus();
-                  print('The id is ${widget.id} and the status is 5');
+                  showDialog(
+                      context: context,
+                      builder: (BuildContext context) {
+                        return ConfirmationDialog(
+                          title: 'تایید',
+                          message: 'آیا از عدم حضور مشتری اطمینان دارید؟',
+                          onConfirm: () {
+                            StateService(status: 5, id: widget.id).getStatus();
+                            setState(() {
+                              widget.orderStatus = 5;
+                            });
+                          },
+                        );
+                      });
                 },
                 child: Text('عدم حضور مشتری'),
                 style: Constants.getElevatedButtonStyle(ButtonType.cancel),
@@ -116,10 +141,20 @@ class _OrderStateButtonsState extends State<OrderStateButtons> {
               height: Constants.buttonHeight,
               child: ElevatedButton(
                 onPressed: () {
-                  StateService(status: 7, id: widget.id).getStatus();
-                  setState(() {
-                    widget.orderStatus = 7;
-                  });
+                  showDialog(
+                      context: context,
+                      builder: (BuildContext context) {
+                        return ConfirmationDialog(
+                            title: 'تأیید',
+                            message: 'آیا نیاز به خرید اقلام دارید؟',
+                            onConfirm: () {
+                              StateService(status: 7, id: widget.id)
+                                  .getStatus();
+                              setState(() {
+                                widget.orderStatus = 7;
+                              });
+                            });
+                      });
                 },
                 child: Text('نیاز به خرید اقلام'),
                 style: Constants.getElevatedButtonStyle(ButtonType.accept),
@@ -131,7 +166,20 @@ class _OrderStateButtonsState extends State<OrderStateButtons> {
               height: Constants.buttonHeight,
               child: ElevatedButton(
                 onPressed: () {
-                  StateService(status: 8, id: widget.id).getStatus();
+                  showDialog(
+                      context: context,
+                      builder: (BuildContext context) {
+                        return ConfirmationDialog(
+                            title: 'تأیید',
+                            message: 'آیا از اتمام کار اطمینان دارید؟',
+                            onConfirm: () {
+                              StateService(status: 8, id: widget.id)
+                                  .getStatus();
+                              setState(() {
+                                widget.orderStatus = 8;
+                              });
+                            });
+                      });
                 },
                 child: Text('اتمام کار'),
                 style: Constants.getElevatedButtonStyle(ButtonType.cancel),
@@ -149,7 +197,20 @@ class _OrderStateButtonsState extends State<OrderStateButtons> {
               height: Constants.buttonHeight,
               child: ElevatedButton(
                 onPressed: () {
-                  StateService(status: 8, id: widget.id).getStatus();
+                  showDialog(
+                      context: context,
+                      builder: (BuildContext context) {
+                        return ConfirmationDialog(
+                            title: 'تأیید',
+                            message: 'آیا از اتمام کار اطمینان دارید؟',
+                            onConfirm: () {
+                              StateService(status: 8, id: widget.id)
+                                  .getStatus();
+                              setState(() {
+                                widget.orderStatus = 8;
+                              });
+                            });
+                      });
                 },
                 child: Text('اتمام کار'),
                 style: Constants.getElevatedButtonStyle(ButtonType.accept),

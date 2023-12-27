@@ -21,6 +21,8 @@ class ConfirmationDialog extends StatelessWidget {
           title,
           style: TextStyle(
             fontFamily: Constants.textFont,
+            fontSize: 20,
+            fontWeight: FontWeight.bold,
           ),
         ),
       ),
@@ -30,30 +32,47 @@ class ConfirmationDialog extends StatelessWidget {
           message,
           style: TextStyle(
             fontFamily: Constants.textFont,
+            fontSize: 18,
           ),
         ),
       ),
       actions: [
-        TextButton(
-          onPressed: () {
-            Navigator.of(context).pop(); // Close the dialog
-          },
-          child: Text(
-            'خیر',
-            style: TextStyle(
-              fontSize: 20,
+        Container(
+          width: 80,
+          child: ElevatedButton(
+            style: ButtonStyle(
+              backgroundColor: MaterialStateProperty.all<Color>(Colors.red),
+            ),
+            onPressed: () {
+              Navigator.of(context).pop(); // Close the dialog
+            },
+            child: Text(
+              'خیر',
+              style: TextStyle(
+                fontSize: 20,
+                color: Colors.white,
+                fontWeight: FontWeight.bold,
+              ),
             ),
           ),
         ),
-        TextButton(
-          onPressed: () {
-            onConfirm();
-            Navigator.of(context).pop(); // Close the dialog
-          },
-          child: Text(
-            'بله',
-            style: TextStyle(
-              fontSize: 20,
+        Container(
+          width: 80,
+          child: ElevatedButton(
+            style: ButtonStyle(
+              backgroundColor: MaterialStateProperty.all<Color>(Colors.green),
+            ),
+            onPressed: () {
+              onConfirm();
+              Navigator.of(context).pop(); // Close the dialog
+            },
+            child: Text(
+              'بله',
+              style: TextStyle(
+                fontSize: 20,
+                color: Colors.white,
+                fontWeight: FontWeight.bold,
+              ),
             ),
           ),
         ),

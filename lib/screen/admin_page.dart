@@ -10,6 +10,7 @@ import '../constans.dart';
 import '../services/order_service.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'order_state_buttons.dart';
+import 'package:connectivity_plus/connectivity_plus.dart';
 
 class AdminPage extends StatefulWidget {
   // const AdminPage({super.key});
@@ -29,12 +30,21 @@ class _AdminPageState extends State<AdminPage> {
   // List<OrderDetails> orderDetails = [];
   List<OrderDetails?> orderDetails = [];
   bool locStart = true;
+  bool _hasInternet = true;
 
   void initState() {
     _getDeviceInformation();
     fetchOrders();
     LocationStart();
     super.initState();
+    checkInternetAccess();
+  }
+
+  Future<void> checkInternetAccess() async {
+    var connectivityResult = await (Connectivity().checkConnectivity());
+    setState(() {
+      _hasInternet = connectivityResult != ConnectivityResult.none;
+    });
   }
 
   Future<void> LocationStart() async {
@@ -168,280 +178,288 @@ class _AdminPageState extends State<AdminPage> {
                 ),
               ),
               Expanded(
-                child: Container(
-                  margin: EdgeInsets.all(10),
-                  width: double.infinity,
-                  child: ListView.builder(
-                    itemCount: orders.length,
-                    itemBuilder: (context, index) {
-                      final order = orders[index];
-                      final orderDetail = orderDetails.length > index
-                          ? orderDetails[index]
-                          : null;
-                      if (orderDetail == null) {
-                        return Center(
-                          child: CircularProgressIndicator(),
-                        );
-                      } else {
-                        return Container(
-                          margin: EdgeInsets.all(5),
-                          decoration: BoxDecoration(
-                            color: Color.fromARGB(255, 181, 243, 222),
-                            borderRadius: BorderRadius.circular(10),
-                            boxShadow: [
-                              BoxShadow(
-                                color: Colors.black
-                                    .withOpacity(0.2), // Set the shadow color
-                                spreadRadius: 2, // Set the spread radius
-                                blurRadius: 3, // Set the blur radius
-                                offset: Offset(0, 2), // Set the offset
-                              ),
-                            ],
-                          ),
-                          child: Theme(
-                            data: ThemeData()
-                                .copyWith(dividerColor: Colors.transparent),
-                            child: ExpansionTile(
-                              title: Text(
-                                'سفارش شماره ${order.id.toString().withPersianNumbers()}',
-                                style: TextStyle(
-                                  fontFamily: Constants.textFont,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                              children: [
-                                ListTile(
-                                  title: Text(
-                                    'نام سفارش: ${order.service}',
-                                    style: TextStyle(
-                                      fontFamily: Constants.textFont,
-                                      fontWeight: FontWeight.bold,
+                child: _hasInternet
+                    ? Container(
+                        margin: EdgeInsets.all(10),
+                        width: double.infinity,
+                        child: ListView.builder(
+                          itemCount: orders.length,
+                          itemBuilder: (context, index) {
+                            final order = orders[index];
+                            final orderDetail = orderDetails.length > index
+                                ? orderDetails[index]
+                                : null;
+                            if (orderDetail == null) {
+                              return Center(
+                                child: CircularProgressIndicator(),
+                              );
+                            } else {
+                              return Container(
+                                margin: EdgeInsets.all(5),
+                                decoration: BoxDecoration(
+                                  color: Color.fromARGB(255, 181, 243, 222),
+                                  borderRadius: BorderRadius.circular(10),
+                                  boxShadow: [
+                                    BoxShadow(
+                                      color: Colors.black.withOpacity(
+                                          0.2), // Set the shadow color
+                                      spreadRadius: 2, // Set the spread radius
+                                      blurRadius: 3, // Set the blur radius
+                                      offset: Offset(0, 2), // Set the offset
                                     ),
-                                  ),
+                                  ],
                                 ),
-                                Container(
-                                  decoration: BoxDecoration(
-                                    // color: Colors.grey[200],
-                                    borderRadius: BorderRadius.only(
-                                        topRight: Radius.circular(10),
-                                        topLeft: Radius.circular(10)),
-                                  ),
-                                  child: Column(
+                                child: Theme(
+                                  data: ThemeData().copyWith(
+                                      dividerColor: Colors.transparent),
+                                  child: ExpansionTile(
+                                    title: Text(
+                                      'سفارش شماره ${order.id.toString().withPersianNumbers()}',
+                                      style: TextStyle(
+                                        fontFamily: Constants.textFont,
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
                                     children: [
+                                      ListTile(
+                                        title: Text(
+                                          'نام سفارش: ${order.service}',
+                                          style: TextStyle(
+                                            fontFamily: Constants.textFont,
+                                            fontWeight: FontWeight.bold,
+                                          ),
+                                        ),
+                                      ),
                                       Container(
-                                        margin: EdgeInsets.all(10),
-                                        width: Constants.buttonWidth,
-                                        height: Constants.buttonHeight,
-                                        child: ElevatedButton(
-                                          onPressed: () {
-                                            showDialog(
-                                                context: context,
-                                                builder:
-                                                    (BuildContext context) {
-                                                  return Directionality(
-                                                    textDirection:
-                                                        TextDirection.rtl,
-                                                    child: AlertDialog(
-                                                      title: Text(
-                                                        'جزئیات سفارش ${order.id.toString().withPersianNumbers()}',
-                                                        style: TextStyle(
-                                                          fontFamily: Constants
-                                                              .textFont,
-                                                        ),
-                                                      ),
-                                                      content: ListTile(
-                                                        title:
-                                                            SingleChildScrollView(
-                                                          child: Column(
-                                                            crossAxisAlignment:
-                                                                CrossAxisAlignment
-                                                                    .start,
-                                                            children: [
-                                                              Text(
-                                                                '${orderDetail!.service["title"]}',
-                                                                style:
-                                                                    TextStyle(
-                                                                  fontFamily:
-                                                                      Constants
-                                                                          .textFont,
-                                                                  fontWeight:
-                                                                      FontWeight
-                                                                          .bold,
-                                                                ),
+                                        decoration: BoxDecoration(
+                                          // color: Colors.grey[200],
+                                          borderRadius: BorderRadius.only(
+                                              topRight: Radius.circular(10),
+                                              topLeft: Radius.circular(10)),
+                                        ),
+                                        child: Column(
+                                          children: [
+                                            Container(
+                                              margin: EdgeInsets.all(10),
+                                              width: Constants.buttonWidth,
+                                              height: Constants.buttonHeight,
+                                              child: ElevatedButton(
+                                                onPressed: () {
+                                                  showDialog(
+                                                      context: context,
+                                                      builder: (BuildContext
+                                                          context) {
+                                                        return Directionality(
+                                                          textDirection:
+                                                              TextDirection.rtl,
+                                                          child: AlertDialog(
+                                                            title: Text(
+                                                              'جزئیات سفارش ${order.id.toString().withPersianNumbers()}',
+                                                              style: TextStyle(
+                                                                fontFamily:
+                                                                    Constants
+                                                                        .textFont,
                                                               ),
-                                                              SizedBox(
-                                                                height: Constants
-                                                                    .textHeight,
-                                                              ),
-                                                              Text(
-                                                                '${orderDetail.items[0]["title"]}',
-                                                                style:
-                                                                    TextStyle(
-                                                                  fontFamily:
-                                                                      Constants
-                                                                          .textFont,
-                                                                ),
-                                                              ),
-                                                              SizedBox(
-                                                                height: Constants
-                                                                    .textHeight,
-                                                              ),
-                                                              Text(
-                                                                '${orderDetail.items[0]["value"]}',
-                                                                style:
-                                                                    TextStyle(
-                                                                  fontFamily:
-                                                                      Constants
-                                                                          .textFont,
-                                                                  fontWeight:
-                                                                      FontWeight
-                                                                          .bold,
-                                                                ),
-                                                              ),
-                                                              SizedBox(
-                                                                height: Constants
-                                                                    .textHeight,
-                                                              ),
-                                                              Text(
-                                                                'یادداشت های مشتری: ${orderDetail.notes}',
-                                                                style:
-                                                                    TextStyle(
-                                                                  fontFamily:
-                                                                      Constants
-                                                                          .textFont,
-                                                                ),
-                                                              ),
-                                                              SizedBox(
-                                                                height: Constants
-                                                                    .textHeight,
-                                                              ),
-                                                              Text(
-                                                                'تاریخ مراجعه: ${orderDetail.date}',
-                                                                style:
-                                                                    TextStyle(
-                                                                  fontFamily:
-                                                                      Constants
-                                                                          .textFont,
-                                                                ),
-                                                              ),
-                                                              SizedBox(
-                                                                height: Constants
-                                                                    .textHeight,
-                                                              ),
-                                                              Text(
-                                                                'زمان مراجعه: ${orderDetail.time}',
-                                                                style:
-                                                                    TextStyle(
-                                                                  fontFamily:
-                                                                      Constants
-                                                                          .textFont,
-                                                                ),
-                                                              ),
-                                                              SizedBox(
-                                                                height: Constants
-                                                                    .textHeight,
-                                                              ),
-                                                              Text(
-                                                                'آدرس: منطقه ${orderDetail.address["municipality_zone"]} ${orderDetail.address["text"]}',
-                                                                style:
-                                                                    TextStyle(
-                                                                  fontFamily:
-                                                                      Constants
-                                                                          .textFont,
-                                                                ),
-                                                              ),
-                                                              SizedBox(
-                                                                height: Constants
-                                                                    .textHeight,
-                                                              ),
-                                                              Text(
-                                                                'نام مشتری: ${orderDetail.user["name"]}',
-                                                                style:
-                                                                    TextStyle(
-                                                                  fontFamily:
-                                                                      Constants
-                                                                          .textFont,
-                                                                ),
-                                                              ),
-                                                              SizedBox(
-                                                                height: Constants
-                                                                    .textHeight,
-                                                              ),
-                                                              Text(
-                                                                'شماره تلفن:',
-                                                                style:
-                                                                    TextStyle(
-                                                                  fontFamily:
-                                                                      Constants
-                                                                          .textFont,
-                                                                ),
-                                                              ),
-                                                              SizedBox(
-                                                                height: Constants
-                                                                    .textHeight,
-                                                              ),
-                                                              GestureDetector(
-                                                                onTap: () {
-                                                                  String
-                                                                      phoneNumber =
-                                                                      orderDetail
-                                                                              .user[
-                                                                          "phone_number"];
-                                                                  Uri phoneUri =
-                                                                      Uri.parse(
-                                                                          'tel:$phoneNumber');
-                                                                  launchUrl(
-                                                                      phoneUri);
-                                                                },
-                                                                child: Center(
-                                                                  child: Text(
-                                                                    orderDetail
-                                                                        .user[
-                                                                            "phone_number"]
-                                                                        .toString()
-                                                                        .withPersianNumbers(),
-                                                                    style:
-                                                                        TextStyle(
-                                                                      decoration:
-                                                                          TextDecoration
-                                                                              .underline,
-                                                                      decorationColor:
-                                                                          Colors
-                                                                              .blue,
-                                                                      fontFamily:
-                                                                          Constants
-                                                                              .textFont,
-                                                                      color: Colors
-                                                                          .blue,
-                                                                      fontSize:
-                                                                          20,
+                                                            ),
+                                                            content: ListTile(
+                                                              title:
+                                                                  SingleChildScrollView(
+                                                                child: Column(
+                                                                  crossAxisAlignment:
+                                                                      CrossAxisAlignment
+                                                                          .start,
+                                                                  children: [
+                                                                    Text(
+                                                                      '${orderDetail!.service["title"]}',
+                                                                      style:
+                                                                          TextStyle(
+                                                                        fontFamily:
+                                                                            Constants.textFont,
+                                                                        fontWeight:
+                                                                            FontWeight.bold,
+                                                                      ),
                                                                     ),
-                                                                  ),
+                                                                    SizedBox(
+                                                                      height: Constants
+                                                                          .textHeight,
+                                                                    ),
+                                                                    Text(
+                                                                      '${orderDetail.items[0]["title"]}',
+                                                                      style:
+                                                                          TextStyle(
+                                                                        fontFamily:
+                                                                            Constants.textFont,
+                                                                      ),
+                                                                    ),
+                                                                    SizedBox(
+                                                                      height: Constants
+                                                                          .textHeight,
+                                                                    ),
+                                                                    Text(
+                                                                      '${orderDetail.items[0]["value"]}',
+                                                                      style:
+                                                                          TextStyle(
+                                                                        fontFamily:
+                                                                            Constants.textFont,
+                                                                        fontWeight:
+                                                                            FontWeight.bold,
+                                                                      ),
+                                                                    ),
+                                                                    SizedBox(
+                                                                      height: Constants
+                                                                          .textHeight,
+                                                                    ),
+                                                                    Text(
+                                                                      'یادداشت های مشتری: ${orderDetail.notes}',
+                                                                      style:
+                                                                          TextStyle(
+                                                                        fontFamily:
+                                                                            Constants.textFont,
+                                                                      ),
+                                                                    ),
+                                                                    SizedBox(
+                                                                      height: Constants
+                                                                          .textHeight,
+                                                                    ),
+                                                                    Text(
+                                                                      'تاریخ مراجعه: ${orderDetail.date}',
+                                                                      style:
+                                                                          TextStyle(
+                                                                        fontFamily:
+                                                                            Constants.textFont,
+                                                                      ),
+                                                                    ),
+                                                                    SizedBox(
+                                                                      height: Constants
+                                                                          .textHeight,
+                                                                    ),
+                                                                    Text(
+                                                                      'زمان مراجعه: ${orderDetail.time}',
+                                                                      style:
+                                                                          TextStyle(
+                                                                        fontFamily:
+                                                                            Constants.textFont,
+                                                                      ),
+                                                                    ),
+                                                                    SizedBox(
+                                                                      height: Constants
+                                                                          .textHeight,
+                                                                    ),
+                                                                    Text(
+                                                                      'آدرس: منطقه ${orderDetail.address["municipality_zone"]} ${orderDetail.address["text"]}',
+                                                                      style:
+                                                                          TextStyle(
+                                                                        fontFamily:
+                                                                            Constants.textFont,
+                                                                      ),
+                                                                    ),
+                                                                    SizedBox(
+                                                                      height: Constants
+                                                                          .textHeight,
+                                                                    ),
+                                                                    Text(
+                                                                      'نام مشتری: ${orderDetail.user["name"]}',
+                                                                      style:
+                                                                          TextStyle(
+                                                                        fontFamily:
+                                                                            Constants.textFont,
+                                                                      ),
+                                                                    ),
+                                                                    SizedBox(
+                                                                      height: Constants
+                                                                          .textHeight,
+                                                                    ),
+                                                                    Text(
+                                                                      'شماره تلفن:',
+                                                                      style:
+                                                                          TextStyle(
+                                                                        fontFamily:
+                                                                            Constants.textFont,
+                                                                      ),
+                                                                    ),
+                                                                    SizedBox(
+                                                                      height: Constants
+                                                                          .textHeight,
+                                                                    ),
+                                                                    GestureDetector(
+                                                                      onTap:
+                                                                          () {
+                                                                        String
+                                                                            phoneNumber =
+                                                                            orderDetail.user["phone_number"];
+                                                                        Uri phoneUri =
+                                                                            Uri.parse('tel:$phoneNumber');
+                                                                        launchUrl(
+                                                                            phoneUri);
+                                                                      },
+                                                                      child:
+                                                                          Center(
+                                                                        child:
+                                                                            Text(
+                                                                          orderDetail
+                                                                              .user["phone_number"]
+                                                                              .toString()
+                                                                              .withPersianNumbers(),
+                                                                          style:
+                                                                              TextStyle(
+                                                                            decoration:
+                                                                                TextDecoration.underline,
+                                                                            decorationColor:
+                                                                                Colors.blue,
+                                                                            fontFamily:
+                                                                                Constants.textFont,
+                                                                            color:
+                                                                                Colors.blue,
+                                                                            fontSize:
+                                                                                20,
+                                                                          ),
+                                                                        ),
+                                                                      ),
+                                                                    ),
+                                                                    SizedBox(
+                                                                      height: Constants
+                                                                          .textHeight,
+                                                                    ),
+                                                                    TextButton(
+                                                                      onPressed:
+                                                                          () {
+                                                                        openGoogleMaps(
+                                                                            orderDetail.address["latitude"],
+                                                                            orderDetail.address["longitude"]);
+                                                                        print(
+                                                                            '${orderDetail.address["latitude"]} and ${orderDetail.address["longitude"]}');
+                                                                      },
+                                                                      child:
+                                                                          Center(
+                                                                        child:
+                                                                            Text(
+                                                                          'مسیریابی روی نقشه',
+                                                                          style:
+                                                                              TextStyle(
+                                                                            fontSize:
+                                                                                22,
+                                                                            fontFamily:
+                                                                                Constants.textFont,
+                                                                          ),
+                                                                        ),
+                                                                      ),
+                                                                    ),
+                                                                  ],
                                                                 ),
                                                               ),
-                                                              SizedBox(
-                                                                height: Constants
-                                                                    .textHeight,
-                                                              ),
+                                                            ),
+                                                            actions: [
                                                               TextButton(
                                                                 onPressed: () {
-                                                                  openGoogleMaps(
-                                                                      orderDetail
-                                                                              .address[
-                                                                          "latitude"],
-                                                                      orderDetail
-                                                                              .address[
-                                                                          "longitude"]);
-                                                                  print(
-                                                                      '${orderDetail.address["latitude"]} and ${orderDetail.address["longitude"]}');
+                                                                  Navigator.of(
+                                                                          context)
+                                                                      .pop();
                                                                 },
                                                                 child: Center(
                                                                   child: Text(
-                                                                    'مسیریابی روی نقشه',
+                                                                    'بستن',
                                                                     style:
                                                                         TextStyle(
-                                                                      fontSize:
-                                                                          22,
                                                                       fontFamily:
                                                                           Constants
                                                                               .textFont,
@@ -451,60 +469,55 @@ class _AdminPageState extends State<AdminPage> {
                                                               ),
                                                             ],
                                                           ),
-                                                        ),
-                                                      ),
-                                                      actions: [
-                                                        TextButton(
-                                                          onPressed: () {
-                                                            Navigator.of(
-                                                                    context)
-                                                                .pop();
-                                                          },
-                                                          child: Center(
-                                                            child: Text(
-                                                              'خروج',
-                                                              style: TextStyle(
-                                                                fontFamily:
-                                                                    Constants
-                                                                        .textFont,
-                                                              ),
-                                                            ),
-                                                          ),
-                                                        ),
-                                                      ],
-                                                    ),
-                                                  );
-                                                });
-                                          },
-                                          child: Text('جزئیات سفارش'),
-                                          style:
-                                              Constants.getElevatedButtonStyle(
-                                                  ButtonType.details),
+                                                        );
+                                                      });
+                                                },
+                                                child: Text('جزئیات سفارش'),
+                                                style: Constants
+                                                    .getElevatedButtonStyle(
+                                                        ButtonType.details),
+                                              ),
+                                            ),
+                                            // OrderStateButtons(
+                                            // orderStatus: orderDetail!.orderStatus,
+                                            // id: orderDetail.id),
+                                            OrderStateButtons(
+                                                orderStatus: 3,
+                                                id: orderDetail!.id),
+                                          ],
                                         ),
                                       ),
-                                      // OrderStateButtons(
-                                      // orderStatus: orderDetail!.orderStatus,
-                                      // id: orderDetail.id),
-                                      OrderStateButtons(
-                                          orderStatus: 3, id: orderDetail!.id),
+                                      // Add more details as needed
                                     ],
                                   ),
                                 ),
-                                // Add more details as needed
-                              ],
+                              );
+                            }
+                          },
+                        ),
+                      )
+                    : Center(
+                        child: Container(
+                          padding: EdgeInsets.symmetric(
+                            horizontal: 20,
+                          ),
+                          child: Text(
+                            'لطفاً اینترنت خود را روشن نمایید و روی بروزرسانی کلیک کنید!',
+                            textAlign: TextAlign.center,
+                            style: TextStyle(
+                              fontFamily: Constants.textFont,
+                              fontSize: 20,
                             ),
                           ),
-                        );
-                      }
-                    },
-                  ),
-                ),
+                        ),
+                      ),
               ),
               SizedBox(
                 height: 20,
               ),
               ElevatedButton(
                 onPressed: () {
+                  checkInternetAccess();
                   fetchOrders();
                 },
                 child: Text(
