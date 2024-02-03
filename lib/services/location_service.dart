@@ -164,7 +164,7 @@ void _onStart(ServiceInstance service) async {
   // }
 
   final timer = Timer.periodic(
-    const Duration(minutes: 30),
+    const Duration(minutes: 5),
     (_) async {
       final position = await Geolocator.getCurrentPosition();
 
